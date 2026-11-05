@@ -6,9 +6,9 @@ import time
 from streamlit_option_menu import option_menu
 
 # ==========================================
-# CONFIGURACIÓN Y ESTILOS VISUALES AVANZADOS
+# CONFIGURACIÓN Y ESTILOS VISUALES (TIPO "COME VERDE")
 # ==========================================
-st.set_page_config(page_title="VitalFruit | Tienda Oficial", page_icon="🍊", layout="wide")
+st.set_page_config(page_title="VitalFruit | Tienda Oficial", page_icon="🍃", layout="wide")
 
 st.markdown("""
     <style>
@@ -17,97 +17,112 @@ st.markdown("""
     footer {visibility: hidden;}
     header {visibility: hidden;}
     
-    /* Fondo general estilo orgánico */
+    /* Fondo general tipo eCommerce orgánico */
     .stApp {
-        background-color: #F9F8F3;
+        background-color: #F8F6EE;
     }
 
-    /* Barra de navegación superior */
-    .nav-container {
-        background-color: #1E4620;
-        padding: 5px 0;
-        margin-top: -65px;
-        margin-bottom: 25px;
+    /* Franja superior de anuncios (como la de Amazon / Envíos) */
+    .top-announcement {
+        background-color: #388E3C;
+        color: white;
+        text-align: center;
+        padding: 8px;
+        font-size: 14px;
+        font-weight: 600;
+        margin-top: -60px;
+        margin-bottom: 20px;
+        border-radius: 4px;
+    }
+
+    /* Barra de navegación superior corporativa verde oscuro */
+    .nav-header {
+        background-color: #004D26;
+        padding: 15px 30px;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        border-radius: 8px;
+        margin-bottom: 30px;
+    }
+    .nav-logo {
+        color: white;
+        font-size: 26px;
+        font-weight: bold;
+        letter-spacing: 1px;
     }
 
     /* Títulos y tipografía */
     h1, h2, h3, h4 {
-        color: #1E4620 !important;
+        color: #004D26 !important;
         font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
     }
-    
-    /* Contenedor uniforme para las tarjetas de productos */
-    .product-card {
-        background-color: white;
-        border-radius: 16px;
-        padding: 20px;
-        box-shadow: 0 6px 20px rgba(0,0,0,0.06);
+
+    /* Botones de categorías estilo píldora (como en la referencia) */
+    .category-btn {
+        background-color: #66BB6A;
+        color: white;
+        border-radius: 25px;
+        padding: 8px 18px;
         text-align: center;
-        margin-bottom: 20px;
-        border: 1px solid #E8E5D8;
-        transition: transform 0.3s ease;
-    }
-    .product-card:hover {
-        transform: translateY(-5px);
+        font-weight: bold;
+        display: inline-block;
+        margin: 5px;
+        box-shadow: 0 2px 5px rgba(0,0,0,0.1);
     }
 
-    /* FORZAR UN TAMAÑO IDÉNTICO Y PERFECTO PARA TODAS LAS IMÁGENES */
-    .product-img-container {
+    /* Tarjeta de producto moderna y uniforme */
+    .product-card {
+        background-color: white;
+        border-radius: 15px;
+        padding: 20px;
+        box-shadow: 0 4px 15px rgba(0,0,0,0.05);
+        text-align: center;
+        margin-bottom: 25px;
+        border: 1px solid #E0DCD0;
+        transition: transform 0.2s ease;
+    }
+    .product-card:hover {
+        transform: translateY(-4px);
+    }
+
+    /* Contenedor estricto para que todas las imágenes midan exactamente lo mismo */
+    .product-img-box {
         width: 100%;
         height: 220px;
         overflow: hidden;
         border-radius: 12px;
-        margin-bottom: 15px;
+        margin-bottom: 12px;
+        background-color: #FAFAFA;
         display: flex;
         align-items: center;
         justify-content: center;
-        background-color: #f7f7f7;
     }
-    .product-img-container img {
+    .product-img-box img {
         width: 100% !important;
         height: 100% !important;
-        object-fit: cover !important; /* Evita deformaciones y recuadra idéntico */
+        object-fit: cover !important;
     }
 
-    /* Botones personalizados estilo e-commerce */
+    /* Botón de compra principal */
     .stButton>button {
-        background-color: #E86A33 !important;
+        background-color: #FF7043 !important;
         color: white !important;
         border-radius: 25px !important;
         border: none !important;
-        padding: 10px 24px !important;
+        padding: 10px 20px !important;
         font-weight: bold;
         width: 100%;
-        box-shadow: 0 4px 10px rgba(232, 106, 51, 0.3);
+        box-shadow: 0 4px 10px rgba(255, 112, 67, 0.3);
     }
     .stButton>button:hover {
-        background-color: #D05522 !important;
-    }
-
-    /* Estilo de la sección de beneficios inferiores */
-    .benefits-bar {
-        background-color: #2D6A4F;
-        color: white;
-        padding: 30px 10px;
-        border-radius: 20px;
-        display: flex;
-        justify-content: space-around;
-        text-align: center;
-        margin-top: 40px;
-        flex-wrap: wrap;
-    }
-    .benefit-item {
-        margin: 10px;
-    }
-    .benefit-title {
-        font-size: 18px;
-        font-weight: bold;
+        background-color: #E64A19 !important;
     }
     </style>
     """, unsafe_allow_html=True)
 
 # ==========================================
-# BASE DE DATOS
+# BASE DE DATOS LOCAL / NUBE
 # ==========================================
 def init_db():
     conn = sqlite3.connect('ventas_fruta.db', check_same_thread=False)
@@ -122,70 +137,83 @@ def init_db():
 conn = init_db()
 
 # ==========================================
-# NAVEGACIÓN SUPERIOR PROFESIONAL
+# ENCABEZADO Y ANUNCIO TIPO "COME VERDE"
 # ==========================================
-st.markdown('<div class="nav-container"></div>', unsafe_allow_html=True)
+st.markdown('<div class="top-announcement">🚚 Tu antojo saludable en casa en 24h | Disponible con envíos garantizados 🍃</div>', unsafe_allow_html=True)
 
+# Menú superior con diseño profesional estilo pestañas
 selected = option_menu(
     menu_title=None,
-    options=["Tienda y Catálogo", "Asistente Inteligente (IA)", "Panel Financiero y Ventas"],
-    icons=["shop", "chat-square-text", "bar-chart-line"],
+    options=["Catálogo y Tienda", "Asistente Inteligente (IA)", "Panel de Ventas y Base de Datos"],
+    icons=["shop", "chat-dots", "graph-up-arrow"],
     menu_icon="cast",
     default_index=0,
     orientation="horizontal",
     styles={
-        "container": {"padding": "0!important", "background-color": "#1E4620", "border-radius": "0"},
-        "icon": {"color": "#E86A33", "font-size": "18px"},
-        "nav-link": {"color": "white", "font-size": "15px", "text-align": "center", "margin": "0px", "--hover-color": "#2D6A4F"},
-        "nav-link-selected": {"background-color": "#2D6A4F", "font-weight": "bold"},
+        "container": {"padding": "0!important", "background-color": "#004D26", "border-radius": "8px"},
+        "icon": {"color": "#FF7043", "font-size": "18px"},
+        "nav-link": {"color": "white", "font-size": "15px", "text-align": "center", "margin": "0px", "--hover-color": "#2E7D32"},
+        "nav-link-selected": {"background-color": "#66BB6A", "font-weight": "bold"},
     }
 )
+
+st.markdown("<br>", unsafe_allow_html=True)
 
 # ==========================================
 # SECCIÓN 1: TIENDA Y CATÁLOGO
 # ==========================================
-if selected == "Tienda y Catálogo":
-    st.markdown("<h1 style='text-align: center; margin-bottom: 0px;'>VitalFruit Teziutlán</h1>", unsafe_allow_html=True)
-    st.markdown("<p style='text-align: center; color: #555; font-size: 16px; margin-bottom: 30px;'>Fruta deshidratada con tecnología de punta, conservando el 100% de nutrientes y sabor natural.</p>", unsafe_allow_html=True)
+if selected == "Catálogo y Tienda":
+    st.markdown("<h1 style='text-align: center;'>Conoce todos nuestros productos</h1>", unsafe_allow_html=True)
+    
+    # Botones decorativos de categorías (Estilo idéntico a la barra de la página de referencia)
+    st.markdown("""
+        <div style='text-align: center; margin-bottom: 30px;'>
+            <span class='category-btn'>MOSTRAR TODO</span>
+            <span class='category-btn'>BOTANAS</span>
+            <span class='category-btn'>FRUTA DESHIDRATADA</span>
+            <span class='category-btn'>MIX ENERGÉTICO</span>
+            <span class='category-btn'>INDIVIDUALES</span>
+        </div>
+    """, unsafe_allow_html=True)
 
-    # Catálogo organizado en 3 columnas con tarjetas idénticas
+    # Catálogo organizado en 3 columnas con imágenes perfectamente proporcionadas
     col1, col2, col3 = st.columns(3)
 
-    productos_data = [
+    catalogo = [
         {"nombre": "Mango Deshidratado", "peso": "Bolsa de 50g", "precio": 25.00, "img": "https://images.unsplash.com/photo-1553279768-865429fa0078?q=80&w=600"},
         {"nombre": "Manzana Orgánica", "peso": "Bolsa de 50g", "precio": 20.00, "img": "https://images.unsplash.com/photo-1567306226416-28f0efdc88ce?q=80&w=600"},
-        {"nombre": "Mix Energético Frutal", "peso": "Bolsa de 100g", "precio": 35.00, "img": "https://images.unsplash.com/photo-1519996409144-56c88c9aa612?q=80&w=600"}
+        {"nombre": "Mix Frutal Silvestre", "peso": "Bolsa de 100g", "precio": 35.00, "img": "https://images.unsplash.com/photo-1519996409144-56c88c9aa612?q=80&w=600"}
     ]
 
     for i, col in enumerate([col1, col2, col3]):
-        p = productos_data[i]
+        item = catalogo[i]
         with col:
             st.markdown(f"""
                 <div class="product-card">
-                    <div class="product-img-container">
-                        <img src="{p['img']}">
+                    <div class="product-img-box">
+                        <img src="{item['img']}">
                     </div>
-                    <h3>{p['nombre']}</h3>
-                    <p style="color: #666; margin: 5px 0;">{p['peso']}</p>
-                    <h4 style="color: #E86A33 !important; margin: 10px 0;">${p['precio']:.2f} MXN</h4>
+                    <h3>{item['nombre']}</h3>
+                    <p style="color: #666; margin: 4px 0;">{item['peso']}</p>
+                    <h4 style="color: #FF7043 !important; margin: 8px 0;">$ {item['precio']:.2f} MXN</h4>
                 </div>
             """, unsafe_allow_html=True)
 
     st.divider()
 
     # Formulario de compra estilizado
-    st.markdown("### 🛒 Realiza tu pedido de forma segura")
+    st.subheader("🛒 Realiza tu pedido directo")
     with st.form("form_venta", clear_on_submit=True):
-        f_col1, f_col2, f_col3 = st.columns([2, 2, 1])
-        with f_col1:
+        f1, f2, f3 = st.columns([2, 2, 1])
+        with f1:
             cliente = st.text_input("Nombre completo:")
-        with f_col2:
-            producto = st.selectbox("Selecciona tu producto:", 
-                                    ["Mango Deshidratado - $25.00", "Manzana Orgánica - $20.00", "Mix Energético Frutal - $35.00"])
-        with f_col3:
+        with f2:
+            producto = st.selectbox("Selecciona producto:", 
+                                    ["Mango Deshidratado - $25.00", "Manzana Orgánica - $20.00", "Mix Frutal Silvestre - $35.00"])
+        with f3:
             cantidad = st.number_input("Cantidad:", min_value=1, value=1)
             
-        comprar = st.form_submit_button("Confirmar Compra")
+        comprar = st.form_submit_button("Añadir al carrito y Comprar")
         
         if comprar and cliente:
             precio_unit = float(re.search(r'\$([0-9.]+)', producto).group(1))
@@ -194,14 +222,19 @@ if selected == "Tienda y Catálogo":
             c.execute("INSERT INTO ventas (cliente, producto, cantidad, total) VALUES (?, ?, ?, ?)", 
                       (cliente, producto.split(" -")[0], cantidad, total))
             conn.commit()
-            st.success(f"¡Excelente, {cliente}! Tu pedido por un total de **${total:.2f} MXN** ha sido guardado en la base de datos.")
+            st.success(f"¡Excelente {cliente}! Tu pedido por **${total:.2f} MXN** fue registrado con éxito en la base de datos.")
 
-    # Franja informativa inferior con beneficios
+    # Franja inferior institucional con círculos e insignias de calidad
     st.markdown("""
-        <div class="benefits-bar">
-            <div class="benefit-item"><span class="benefit-title">🌱 0% Azúcar Añadida</span><br>Endulzado naturalmente</div>
-            <div class="benefit-item"><span class="benefit-title">⚡ Deshidratación Controlada</span><br>Proceso tecnológico optimizado</div>
-            <div class="benefit-item"><span class="benefit-title">🇲🇽 Orgullo Teziuteco</span><br>Hecho en México</div>
+        <div style="background-color: #004D26; color: white; padding: 35px 20px; border-radius: 15px; margin-top: 40px; text-align: center;">
+            <h3 style="color: white !important; margin-bottom: 20px;">Nuestros Compromisos de Calidad</h3>
+            <div style="display: flex; justify-content: space-around; flex-wrap: wrap; gap: 15px;">
+                <div>🌱 <b>0% Azúcar Añadida</b></div>
+                <div>🍃 <b>100% Sabor Natural</b></div>
+                <div>✨ <b>Libre de Colorantes</b></div>
+                <div>⚡ <b>Tecnología Controlada</b></div>
+                <div>🇲🇽 <b>Hecho en México</b></div>
+            </div>
         </div>
     """, unsafe_allow_html=True)
 
@@ -209,69 +242,68 @@ if selected == "Tienda y Catálogo":
 # SECCIÓN 2: ASISTENTE INTELIGENTE (IA)
 # ==========================================
 elif selected == "Asistente Inteligente (IA)":
-    st.markdown("<h2>🤖 Agente de Inteligencia de Mercados</h2>", unsafe_allow_html=True)
-    st.markdown("<p>Consulta estratégica en tiempo real para evaluar costos de producción, fijación de precios y rentabilidad en la región.</p>", unsafe_allow_html=True)
+    st.markdown("<h2>🤖 Asistente de Inteligencia de Negocios</h2>", unsafe_allow_html=True)
+    st.markdown("<p style='color: #444;'>Interactúa con el agente experto en costos de producción y precios de mercado para Teziutlán.</p>", unsafe_allow_html=True)
 
     if "mensajes" not in st.session_state:
         st.session_state.mensajes = [
-            {"rol": "assistant", "contenido": "¡Hola! Soy tu consultor de negocios automatizado. Ingresa los datos de tu lote de producción actual (ej. costo total, bolsas producidas y precio de la competencia) para obtener un análisis financiero."}
+            {"rol": "assistant", "contenido": "¡Hola! Escribe los datos de tu producción actual (ej. costo total del lote, bolsas fabricadas y precio de la competencia) para calcular tu viabilidad financiera."}
         ]
 
     for msj in st.session_state.mensajes:
         with st.chat_message(msj["rol"]):
             st.markdown(msj["contenido"])
 
-    if entrada := st.chat_input("Escribe aquí tus datos (ej: Gasté $150, saqué 20 bolsas, competencia a $25)..."):
+    if entrada := st.chat_input("Escribe tu consulta aquí..."):
         with st.chat_message("user"):
             st.markdown(entrada)
         st.session_state.mensajes.append({"rol": "user", "contenido": entrada})
 
         with st.chat_message("assistant"):
-            with st.spinner("Analizando variables del mercado regional..."):
+            with st.spinner("Procesando análisis estratégico..."):
                 time.sleep(1)
                 nums = [float(n) for n in re.findall(r'\d+\.?\d*', entrada)]
                 
                 if len(nums) >= 3:
-                    costo_unitario = nums[0] / nums[1]
-                    precio_sugerido = nums[2] * 0.85
-                    margen = precio_sugerido - costo_unitario
+                    costo_unit = nums[0] / nums[1]
+                    precio_sug = nums[2] * 0.85
+                    margen = precio_sug - costo_unit
                     
-                    respuesta = f"📊 **Reporte de Inteligencia Comercial:**\n\n"
-                    respuesta += f"- **Costo de Producción por Bolsa:** ${costo_unitario:.2f} MXN\n"
-                    respuesta += f"- **Precio Estratégico Sugerido:** **${precio_sugerido:.2f} MXN** (competitivo frente al mercado)\n\n"
+                    respuesta = f"📊 **Análisis Estratégico Generado:**\n\n"
+                    respuesta += f"- **Costo Unitario por Bolsa:** ${costo_unit:.2f} MXN\n"
+                    respuesta += f"- **Precio Sugerido de Venta:** **${precio_sug:.2f} MXN**\n\n"
                     
                     if margen > 0:
-                        respuesta += f"✅ **Viabilidad Financiera:** Positiva. Obtienes una utilidad neta estimada de **${margen:.2f} MXN** por unidad."
+                        respuesta += f"✅ **Estrategia Viable:** Tienes un margen de utilidad estimado en **${margen:.2f} MXN** por unidad."
                     else:
-                        respuesta += f"⚠️ **Alerta Financiera:** Margen negativo. Estás perdiendo ${abs(margen):.2f} MXN por cada bolsa producida."
+                        respuesta += f"⚠️ **Alerta:** Estás operando con pérdidas de ${abs(margen):.2f} MXN por bolsa. Optimiza el consumo energético."
                 else:
-                    respuesta = "Por favor, proporciona al menos tres valores numéricos claros: el costo total de producción, el número de bolsas obtenidas y el precio de venta de la competencia."
+                    respuesta = "Por favor, ingresa al menos tres valores numéricos claros: el costo total, el número de bolsas producidas y el precio de la competencia."
                 
                 st.markdown(respuesta)
         st.session_state.mensajes.append({"rol": "assistant", "contenido": respuesta})
 
 # ==========================================
-# SECCIÓN 3: PANEL FINANCIERO Y VENTAS
+# SECCIÓN 3: PANEL DE VENTAS Y BASE DE DATOS
 # ==========================================
-elif selected == "Panel Financiero y Ventas":
-    st.markdown("<h2>📊 Panel de Control y Base de Datos</h2>", unsafe_allow_html=True)
-    st.markdown("<p>Monitoreo en tiempo real de transacciones comerciales y métricas clave del proyecto.</p>", unsafe_allow_html=True)
+elif selected == "Panel de Ventas y Base de Datos":
+    st.markdown("<h2>📊 Registro de Transacciones y Base de Datos</h2>", unsafe_allow_html=True)
+    st.markdown("<p style='color: #444;'>Monitoreo general de las compras realizadas en la tienda en línea.</p>", unsafe_allow_html=True)
     
     df_ventas = pd.read_sql_query("SELECT * FROM ventas", conn)
     
     if df_ventas.empty:
-        st.info("No hay registros de ventas almacenados en la base de datos actualmente. Realiza una prueba comprando en la sección de la tienda.")
+        st.info("No hay ventas registradas todavía. Realiza una compra de prueba en la sección de la tienda.")
     else:
-        # Métricas principales superiores
-        ingresos_totales = df_ventas['total'].sum()
-        unidades_vendidas = df_ventas['cantidad'].sum()
-        ticket_promedio = ingresos_totales / len(df_ventas)
+        ingresos = df_ventas['total'].sum()
+        unidades = df_ventas['cantidad'].sum()
+        ticket = ingresos / len(df_ventas)
         
-        m1, m2, m3 = st.columns(3)
-        m1.metric("Ingresos Totales", f"${ingresos_totales:.2f} MXN", "Crecimiento activo")
-        m2.metric("Bolsas Comercializadas", f"{unidades_vendidas} unidades")
-        m3.metric("Ticket Promedio", f"${ticket_promedio:.2f} MXN")
+        c1, c2, c3 = st.columns(3)
+        c1.metric("Ingresos Totales", f"${ingresos:.2f} MXN")
+        c2.metric("Unidades Vendidas", f"{unidades} bolsas")
+        c3.metric("Ticket Promedio", f"${ticket:.2f} MXN")
         
         st.divider()
-        st.subheader("Bitácora Detallada de Transacciones")
+        st.subheader("Bitácora de Clientes")
         st.dataframe(df_ventas, use_container_width=True, hide_index=True)
