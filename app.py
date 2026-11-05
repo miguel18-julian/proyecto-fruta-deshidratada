@@ -5,9 +5,8 @@ from pathlib import Path
 
 import pandas as pd
 import streamlit as st
-from streamlit_option_menu import option_menu
 
-st.set_page_config(page_title="VitalFruit | Tienda Oficial", page_icon="🍃",
+st.set_page_config(page_title="Fruta Deshidratada Teziutlán", page_icon="🍃",
                    layout="wide", initial_sidebar_state="collapsed")
 
 DARK, GREEN, BEIGE, ORANGE = "#005C41", "#65B743", "#EBE8E1", "#FF7043"
@@ -23,20 +22,34 @@ st.markdown("""
 .block-container{padding:0 3rem 0 3rem !important; max-width:100% !important;}
 h1,h2,h3,h4{color:var(--dark) !important; font-family:'Segoe UI',Tahoma,sans-serif;}
 .full{margin-left:-3rem; margin-right:-3rem;}
-iframe[title="streamlit_option_menu.option_menu"]{margin-left:-3rem; width:calc(100% + 6rem) !important;}
 
 /* Header */
 .hdr{background:var(--dark); display:flex; align-items:center; justify-content:space-between;
-     padding:22px 3rem 8px 3rem; color:white; font-size:18px;}
-.hdr .logo{font-family:Georgia,'Times New Roman',serif; font-size:48px; line-height:.88;
-     text-align:center; font-weight:700; letter-spacing:-1px;}
-.hdr .logo small{display:block; font-size:22px; letter-spacing:0;}
-.hdr .side{width:30%;} .hdr .right{text-align:right; font-size:24px;}
-.hdr .right b{background:var(--orange); border-radius:50%; padding:2px 10px; font-size:16px;}
+     padding:22px 3rem 18px 3rem; color:white;}
+.hdr .side{width:30%; font-size:15px; letter-spacing:1px; opacity:.9;}
+.hdr .right{display:flex; justify-content:flex-end; align-items:center; gap:26px;}
+.hdr .logo{text-align:center; color:white; line-height:1;}
+.hdr .logo .top{display:block; font-size:13px; letter-spacing:7px; font-weight:600; text-transform:uppercase; opacity:.85;}
+.hdr .logo .name{display:block; font-family:Georgia,'Times New Roman',serif; font-size:50px;
+     font-weight:700; font-style:italic; margin-top:6px;}
+.ico{width:26px; height:26px; background-size:contain; background-repeat:no-repeat; display:inline-block;}
+.ico-search{background-image:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='white' stroke-width='1.8' stroke-linecap='round'><circle cx='11' cy='11' r='7'/><path d='M20 20l-4-4'/></svg>");}
+.ico-cart{background-image:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='white' stroke-width='1.8' stroke-linecap='round' stroke-linejoin='round'><path d='M3 4h2l2.4 11h10.2l2-8H6.2'/><circle cx='9' cy='19' r='1.4'/><circle cx='17' cy='19' r='1.4'/></svg>");}
+.cart-n{background:var(--orange); color:white; border-radius:12px; min-width:22px; text-align:center;
+     font-size:13px; font-weight:700; padding:1px 7px; margin-left:-16px; margin-top:-18px;}
+
+/* Menú de navegación (radio horizontal con estilo de pestañas) */
+.st-key-nav{background:var(--dark); margin:-1rem -3rem -1rem -3rem; padding:2px 3rem 18px 3rem;}
+.st-key-nav [role="radiogroup"]{justify-content:center; gap:6px; flex-wrap:nowrap;}
+.st-key-nav label{padding:9px 24px; border-radius:8px; cursor:pointer; margin:0 !important;}
+.st-key-nav label > div:first-child{display:none;}
+.st-key-nav label p{color:white !important; font-size:16px; white-space:nowrap;}
+.st-key-nav label:hover{background:#0A7A57;}
+.st-key-nav label:has(input:checked){background:var(--green);}
 
 /* Franja en movimiento */
 .marq{background:var(--green); color:white; font-weight:600; font-size:19px; padding:14px 0;
-      overflow:hidden; white-space:nowrap;}
+      overflow:hidden; white-space:nowrap; margin-top:0;}
 .marq div{display:inline-block; animation:mq 40s linear infinite;}
 @keyframes mq{from{transform:translateX(0);} to{transform:translateX(-50%);}}
 
@@ -84,14 +97,11 @@ iframe[title="streamlit_option_menu.option_menu"]{margin-left:-3rem; width:calc(
 .foot b{font-size:20px;}
 .copy{background:#00402D; color:#B9D3C7; text-align:center; padding:12px; font-size:13px;}
 
-/* Burbuja flotante del agente */
+/* Botón flotante del asistente */
 div[data-testid="stPopover"]{position:fixed; bottom:26px; right:30px; z-index:9999; width:auto !important;}
-div[data-testid="stPopover"] button{width:70px; height:70px; border-radius:50% !important;
-    background:var(--orange) !important; border:none !important; padding:0 !important;
-    box-shadow:0 8px 24px rgba(0,0,0,.35) !important; animation:pulso 2.5s infinite;}
-div[data-testid="stPopover"] button p{font-size:32px !important;}
-div[data-testid="stPopover"] button svg{display:none;}
-@keyframes pulso{0%{box-shadow:0 0 0 0 rgba(255,112,67,.6);}70%{box-shadow:0 0 0 18px rgba(255,112,67,0);}100%{box-shadow:0 0 0 0 rgba(255,112,67,0);}}
+div[data-testid="stPopover"] button{height:52px; border-radius:30px !important; background:var(--dark) !important;
+    border:none !important; padding:0 22px !important; box-shadow:0 8px 22px rgba(0,0,0,.30) !important;}
+div[data-testid="stPopover"] button *{color:white !important; font-weight:600;}
 div[data-testid="stPopoverBody"]{width:min(430px,92vw) !important; border-radius:18px !important;}
 </style>
 """, unsafe_allow_html=True)
@@ -163,13 +173,13 @@ conn = get_conn()
 st.session_state.setdefault("carrito", {})
 st.session_state.setdefault("categoria", "MOSTRAR TODO")
 st.session_state.setdefault("mensajes", [{"rol": "assistant", "contenido":
-    "¡Hola! Soy el agente de VitalFruit 🍃 Pregúntame por precios, recomendaciones, ventas, "
+    "¡Hola! Soy el asistente de Fruta Deshidratada Teziutlán. Pregúntame por precios, recomendaciones, ventas, "
     "o escribe el costo de tu lote, las bolsas producidas y el precio de la competencia."}])
 
 
 def agregar(pid):
     st.session_state.carrito[pid] = st.session_state.carrito.get(pid, 0) + 1
-    st.toast(f"{POR_ID[pid]['nombre']} agregado al carrito 🛒")
+    st.toast(f"{POR_ID[pid]['nombre']} agregado al carrito")
 
 
 def n_items():
@@ -212,7 +222,7 @@ def tool_ventas():
     if df.empty:
         return "Aún no hay ventas registradas."
     top = df.groupby("producto")["cantidad"].sum().sort_values(ascending=False)
-    return (f"📈 **Resumen de ventas**\n\n- Registros: **{len(df)}**\n"
+    return (f"**Resumen de ventas**\n\n- Registros: **{len(df)}**\n"
             f"- Ingresos: **${df['total'].sum():.2f} MXN**\n"
             f"- Más vendido: **{top.index[0]}** ({int(top.iloc[0])} uds)")
 
@@ -223,10 +233,10 @@ def tool_viabilidad(n):
         return "El número de bolsas debe ser mayor a cero."
     cu, ps = costo / bolsas, comp * 0.85
     mg = ps - cu
-    txt = (f"📊 **Análisis de viabilidad**\n\n- Costo unitario: **${cu:.2f}**\n"
+    txt = (f"**Análisis de viabilidad**\n\n- Costo unitario: **${cu:.2f}**\n"
            f"- Precio sugerido (15% bajo la competencia): **${ps:.2f}**\n"
            f"- Margen por bolsa: **${mg:.2f}** ({mg / ps * 100:.0f}%)\n\n")
-    return txt + ("✅ **Viable:** hay utilidad." if mg > 0 else "⚠️ **Alerta:** vendes con pérdida; reduce costos o sube el precio.")
+    return txt + ("**Viable:** hay utilidad." if mg > 0 else "**Alerta:** vendes con pérdida; reduce costos o sube el precio.")
 
 
 def agente(msg):
@@ -242,10 +252,10 @@ def agente(msg):
                             "mango", "manzana", "plátano", "platano", "fresa", "piña", "kiwi", "papaya", "naranja"]):
         return tool_catalogo(msg), "consultar_catalogo"
     if any(w in q for w in ["envío", "envio", "entrega", "tarda"]):
-        return "🚚 Entregamos en 24 h en zonas con cobertura.", "preguntas_frecuentes"
-    return ("Puedo ayudarte con:\n\n- 🛍️ **Precios** (*¿cuánto cuesta el mango?*)\n"
-            "- 🎯 **Recomendaciones** (*recomiéndame algo picante*)\n- 📈 **Ventas** (*¿cómo van las ventas?*)\n"
-            "- 💰 **Viabilidad** (*costo del lote 600, 40 bolsas, competencia 45*)"), "ayuda"
+        return "Los pedidos se coordinan directamente con nosotros en Teziutlán y la región.", "preguntas_frecuentes"
+    return ("Puedo ayudarte con:\n\n- **Precios** (*¿cuánto cuesta el mango?*)\n"
+            "- **Recomendaciones** (*recomiéndame algo picante*)\n- **Ventas** (*¿cómo van las ventas?*)\n"
+            "- **Viabilidad** (*costo del lote 600, 40 bolsas, competencia 45*)"), "ayuda"
 
 
 @st.fragment
@@ -266,7 +276,7 @@ def chat_agente():
     if pregunta:
         resp, tool = agente(pregunta)
         st.session_state.mensajes.append({"rol": "user", "contenido": pregunta})
-        st.session_state.mensajes.append({"rol": "assistant", "contenido": f"🔧 `{tool}`\n\n{resp}"})
+        st.session_state.mensajes.append({"rol": "assistant", "contenido": f"Herramienta usada: `{tool}`\n\n{resp}"})
     with caja:
         for m in st.session_state.mensajes:
             with st.chat_message(m["rol"]):
@@ -279,12 +289,16 @@ def chat_agente():
 def encabezado():
     st.markdown(f"""
     <div class="full hdr">
-        <div class="side">🍃 Fruta deshidratada artesanal</div>
-        <div class="logo">vital<small>fruit</small></div>
-        <div class="side right">🔍 &nbsp; 🛒 <b>{n_items()}</b></div>
+        <div class="side">Teziutlán, Puebla</div>
+        <div class="logo"><span class="top">Fruta deshidratada</span><span class="name">Teziutlán</span></div>
+        <div class="side right"><span class="ico ico-search"></span><span class="ico ico-cart"></span><span class="cart-n">{n_items()}</span></div>
     </div>
-    <div class="full marq"><div>{"Tu antojo saludable en casa en 24h | Envíos a todo México 🚚 &nbsp;&nbsp;&nbsp;&nbsp; " * 12}</div></div>
     """, unsafe_allow_html=True)
+
+
+def marquesina():
+    texto = "Fruta deshidratada artesanal de Teziutlán &nbsp;|&nbsp; 0% azúcar añadida &nbsp;|&nbsp; 100% sabor natural &nbsp;&nbsp;&nbsp;&nbsp;&nbsp; "
+    st.markdown(f'<div class="full marq"><div>{texto * 12}</div></div>', unsafe_allow_html=True)
 
 
 def pie():
@@ -300,11 +314,11 @@ def pie():
     <div class="full wave-bot"></div>
     <div class="full foot">
         <div><b>Productos</b><br>Botanas<br>Fruta deshidratada<br>Mix energético</div>
-        <div><b>VitalFruit®</b><br>Buscar<br>Contacto<br>Quiénes somos</div>
-        <div><b>Soporte</b><br>Preguntas frecuentes<br>contacto@vitalfruit.mx</div>
-        <div>Teziutlán, Puebla, México<br>📘 &nbsp; 📸 &nbsp; 🎵 &nbsp; ▶️ &nbsp; ✉️</div>
+        <div><b>Fruta Deshidratada Teziutlán</b><br>Quiénes somos<br>Pedidos<br>Preguntas frecuentes</div>
+        <div><b>Contacto</b><br>correo@ejemplo.com<br>WhatsApp: 000 000 0000</div>
+        <div><b>Ubicación</b><br>Teziutlán, Puebla, México<br>Facebook · Instagram · TikTok</div>
     </div>
-    <div class="full copy">© 2026 VitalFruit® · Fruta deshidratada artesanal</div>
+    <div class="full copy">© 2026 Fruta Deshidratada Teziutlán · Hecho en Puebla, México</div>
     """, unsafe_allow_html=True)
 
 
@@ -337,7 +351,7 @@ def vista_catalogo(titulo, cat_fija=None):
     f1, _, f3 = st.columns([2, 5, 2])
     orden = f1.selectbox("Ordenar", ["Destacados", "Precio: menor a mayor", "Precio: mayor a menor", "Nombre A-Z"],
                          key=f"ord_{titulo}", label_visibility="collapsed")
-    busq = f3.text_input("Buscar", placeholder="🔍 Buscar producto", key=f"q_{titulo}", label_visibility="collapsed")
+    busq = f3.text_input("Buscar", placeholder="Buscar producto", key=f"q_{titulo}", label_visibility="collapsed")
 
     items = CATALOGO if cat == "MOSTRAR TODO" else [p for p in CATALOGO if cat in p["cats"]]
     if busq:
@@ -353,19 +367,19 @@ def vista_catalogo(titulo, cat_fija=None):
             for col, p in zip(st.columns(4), items[i:i + 4]):
                 with col:
                     st.markdown(tarjeta(p), unsafe_allow_html=True)
-                    st.button("Agregar al carrito 🛒", key=f"add_{titulo}_{p['id']}",
+                    st.button("Agregar al carrito", key=f"add_{titulo}_{p['id']}",
                               on_click=agregar, args=(p["id"],), use_container_width=True)
 
 
 def vista_carrito():
-    st.markdown("<h1 class='ttl'>🛒 Tu carrito</h1>", unsafe_allow_html=True)
+    st.markdown("<h1 class='ttl'>Tu carrito</h1>", unsafe_allow_html=True)
     if not st.session_state.carrito:
         st.info("Tu carrito está vacío. Agrega productos desde el catálogo.")
         return
     for pid, q in list(st.session_state.carrito.items()):
         p = POR_ID[pid]
         c1, c2, c3 = st.columns([5, 3, 1])
-        c1.markdown(f"### {p['emoji']} {p['nombre']} · {p['peso']}")
+        c1.markdown(f"### {p['nombre']} · {p['peso']}")
         c2.markdown(f"### {q} × ${p['precio']:.2f} = ${q * p['precio']:.2f}")
         if c3.button("✖", key=f"del_{pid}"):
             del st.session_state.carrito[pid]
@@ -384,7 +398,7 @@ def vista_carrito():
                                  (cliente.strip(), p["nombre"], q, p["precio"] * q))
                 conn.commit()
                 st.session_state.carrito = {}
-                st.success(f"¡Gracias {cliente}! Pedido por **${total:.2f} MXN** registrado 🎉")
+                st.success(f"¡Gracias {cliente}! Pedido por **${total:.2f} MXN** registrado.")
                 st.balloons()
 
 
@@ -393,20 +407,20 @@ def vista_nosotros():
     a, b = st.columns(2)
     with a:
         st.markdown("""
-### Fruta real, deshidratada con cuidado 🍃
-En VitalFruit deshidratamos fruta y verdura fresca con tecnología controlada para conservar su sabor
+### Fruta real, deshidratada con cuidado
+En Fruta Deshidratada Teziutlán deshidratamos fruta y verdura fresca con tecnología controlada para conservar su sabor
 y sus nutrientes, sin azúcar añadida ni colorantes artificiales. Son snacks pensados para
 cualquier momento del día.
 """)
     with b:
-        for t, d in [("🌱 Ingredientes naturales", "Solo fruta, verdura y especias."),
-                     ("⚡ Deshidratación controlada", "Temperatura y tiempo cuidados lote por lote."),
-                     ("🇲🇽 Hecho en México", "Producción local en Puebla.")]:
+        for t, d in [("Ingredientes naturales", "Solo fruta, verdura y especias."),
+                     ("Deshidratación controlada", "Temperatura y tiempo cuidados lote por lote."),
+                     ("Hecho en México", "Producción local en Teziutlán, Puebla.")]:
             st.markdown(f"**{t}** — {d}")
 
 
 def vista_panel():
-    st.markdown("<h1 class='ttl'>📊 Panel de ventas</h1>", unsafe_allow_html=True)
+    st.markdown("<h1 class='ttl'>Panel de ventas</h1>", unsafe_allow_html=True)
     df = pd.read_sql_query("SELECT * FROM ventas", conn)
     if df.empty:
         st.info("No hay ventas todavía. Haz una compra de prueba.")
@@ -422,21 +436,17 @@ def vista_panel():
     g2.subheader("Ingresos por producto")
     g2.bar_chart(df.groupby("producto")["total"].sum(), color=ORANGE)
     st.dataframe(df, use_container_width=True, hide_index=True)
-    st.download_button("⬇️ Descargar CSV", df.to_csv(index=False).encode("utf-8"), "ventas.csv", "text/csv")
+    st.download_button("Descargar CSV", df.to_csv(index=False).encode("utf-8"), "ventas.csv", "text/csv")
 
 
 # ==========================================================
 # APP
 # ==========================================================
 encabezado()
-seleccion = option_menu(
-    None, ["Productos", "Botanas", "Fruta deshidratada", "Mix energético", "Nosotros", "Carrito", "Ventas"],
-    icons=["shop", "cookie", "apple", "box-seam", "info-circle", "cart3", "graph-up-arrow"],
-    orientation="horizontal", key="nav",
-    styles={"container": {"padding": "4px 0 14px 0", "background-color": DARK, "border-radius": "0"},
-            "icon": {"color": ORANGE, "font-size": "16px"},
-            "nav-link": {"color": "white", "font-size": "16px", "--hover-color": "#0A7A57"},
-            "nav-link-selected": {"background-color": GREEN, "font-weight": "bold"}})
+NAV = ["Productos", "Botanas", "Fruta deshidratada", "Mix energético", "Nosotros", "Carrito", "Ventas"]
+with st.container(key="nav"):
+    seleccion = st.radio("Menú", NAV, horizontal=True, label_visibility="collapsed", key="nav_radio")
+marquesina()
 
 if seleccion == "Productos":
     vista_catalogo("Conoce todos nuestros productos")
@@ -457,6 +467,6 @@ if seleccion != "Ventas":
     pie()
 
 # Burbuja flotante del agente (visible en todas las páginas)
-with st.popover("💬"):
-    st.markdown("#### 🤖 Agente VitalFruit")
+with st.popover(":material/chat: Asistente"):
+    st.markdown("#### Asistente")
     chat_agente()
