@@ -1,119 +1,192 @@
 import streamlit as st
 import sqlite3
 import pandas as pd
-
-# Configuración de la página
-st.set_page_config(page_title="Fruta Deshidratada Teziutlán", page_icon="🍎", layout="wide")
+import re
+import time
 
 # ==========================================
-# 1. CONFIGURACIÓN DE LA BASE DE DATOS
+# CONFIGURACIÓN Y ESTILOS VISUALES
+# ==========================================
+st.set_page_config(page_title="VitalFruit | Teziutlán", page_icon="🍊", layout="wide")
+
+# Inyección de CSS para hacer la página más atractiva
+st.markdown("""
+    <style>
+    /* Color de botones */
+    .stButton>button {
+        background-color: #ff6f00 !important;
+        color: white !important;
+        font-weight: bold !important;
+        border-radius: 10px !important;
+        border: none !important;
+    }
+    .stButton>button:hover {
+        background-color: #e65c00 !important;
+    }
+    /* Estilo de encabezados */
+    h1, h2, h3 {
+        color: #ff6f00;
+        font-family: 'Arial', sans-serif;
+    }
+    </style>
+    """, unsafe_allow_html=True)
+
+# ==========================================
+# BASE DE DATOS
 # ==========================================
 def init_db():
     conn = sqlite3.connect('ventas_fruta.db', check_same_thread=False)
     c = conn.cursor()
-    # Crear tabla de ventas si no existe
     c.execute('''CREATE TABLE IF NOT EXISTS ventas
                  (id INTEGER PRIMARY KEY AUTOINCREMENT,
-                  cliente TEXT,
-                  producto TEXT,
-                  cantidad INTEGER,
-                  total REAL,
+                  cliente TEXT, producto TEXT, cantidad INTEGER, total REAL,
                   fecha TIMESTAMP DEFAULT CURRENT_TIMESTAMP)''')
     conn.commit()
     return conn
 
 conn = init_db()
 
-# Menú de navegación lateral
-st.sidebar.title("Navegación")
-opcion = st.sidebar.radio("Ir a:", ["🛒 Tienda en Línea", "🤖 Agente IA (Nube)", "📊 Base de Datos"])
+# ==========================================
+# NAVEGACIÓN LATERAL (SIDEBAR)
+# ==========================================
+with st.sidebar:
+    st.image("https://images.unsplash.com/photo-1517058814526-724bbba07a75?q=80&w=500", caption="Fruta 100% Natural")
+    st.title("🍊 Menú VitalFruit")
+    opcion = st.radio("Navegación:", ["🛒 Tienda en Línea", "💬 Agente IA (Chat)", "📊 Base de Datos"])
+    st.divider()
+    st.caption("Proyecto: Inteligencia de Mercados")
+    st.caption("Región: Teziutlán, Puebla")
 
 # ==========================================
-# 2. SECCIÓN: TIENDA EN LÍNEA (VENTAS)
+# SECCIÓN 1: TIENDA EN LÍNEA
 # ==========================================
 if opcion == "🛒 Tienda en Línea":
-    st.title("🍎 Tienda de Fruta Deshidratada")
-    st.write("100% natural, procesada con tecnología controlada para conservar todos sus nutrientes.")
+    st.title("🍊 Tienda Oficial VitalFruit")
+    st.markdown("### Snack saludable, tecnología controlada por ESP32.")
     
-    col1, col2 = st.columns(2)
+    # Banner principal
+    st.image("https://images.unsplash.com/photo-1600857544200-b2f666a9a2ec?q=80&w=1200&h=300&fit=crop", use_container_width=True)
+    st.divider()
+
+    # Catálogo de productos con imágenes en columnas
+    col1, col2, col3 = st.columns(3)
     
     with col1:
-        st.image("https://images.unsplash.com/photo-1600857544200-b2f666a9a2ec?q=80&w=800", caption="Mix de Frutas Deshidratadas", use_container_width=True)
-    
+        st.image("https://images.unsplash.com/photo-1567306226416-28f0efdc88ce?q=80&w=400", caption="Manzana Deshidratada")
+        st.subheader("Manzana (50g)")
+        st.write("Precio: $20.00 MXN")
     with col2:
-        st.subheader("Realizar Pedido")
-        st.write("Ideal para un estilo de vida activo en Teziutlán.")
+        st.image("https://images.unsplash.com/photo-1553279768-865429fa0078?q=80&w=400", caption="Mango Deshidratado")
+        st.subheader("Mango (50g)")
+        st.write("Precio: $25.00 MXN")
+    with col3:
+        st.image("https://images.unsplash.com/photo-1519996409144-56c88c9aa612?q=80&w=400", caption="Mix Frutal Energía")
+        st.subheader("Mix Frutal (100g)")
+        st.write("Precio: $35.00 MXN")
+
+    st.divider()
+    
+    # Formulario de pago estilizado
+    st.subheader("💳 Realizar Pedido")
+    with st.form("form_venta", clear_on_submit=True):
+        cliente = st.text_input("👤 Tu Nombre:")
+        col_prod, col_cant = st.columns(2)
+        with col_prod:
+            producto = st.selectbox("🍎 Selecciona el producto:", 
+                                    ["Manzana Deshidratada - $20.00", "Mango Deshidratado - $25.00", "Mix Frutal - $35.00"])
+        with col_cant:
+            cantidad = st.number_input("📦 Cantidad de bolsas:", min_value=1, value=1)
+            
+        comprar = st.form_submit_button("Confirmar Compra")
         
-        with st.form("form_venta"):
-            cliente = st.text_input("Nombre del Cliente:")
-            producto = st.selectbox("Selecciona tu producto:", ["Manzana Deshidratada (50g) - $20.00", "Mango Deshidratado (50g) - $25.00", "Mix Frutal (100g) - $35.00"])
-            cantidad = st.number_input("Cantidad de bolsas:", min_value=1, value=1)
-            
-            # Extraer precio del string seleccionado
-            precio_unitario = float(producto.split("$")[1])
-            total = precio_unitario * cantidad
-            
-            st.write(f"**Total a pagar: ${total:.2f} MXN**")
-            comprar = st.form_submit_button("Confirmar Compra")
-            
-            if comprar and cliente:
-                # Guardar venta en la base de datos
-                c = conn.cursor()
-                c.execute("INSERT INTO ventas (cliente, producto, cantidad, total) VALUES (?, ?, ?, ?)", 
-                          (cliente, producto.split(" -")[0], cantidad, total))
-                conn.commit()
-                st.success(f"¡Gracias por tu compra, {cliente}! Tu pedido ha sido registrado.")
+        if comprar and cliente:
+            precio = float(re.search(r'\$([0-9.]+)', producto).group(1))
+            total = precio * cantidad
+            c = conn.cursor()
+            c.execute("INSERT INTO ventas (cliente, producto, cantidad, total) VALUES (?, ?, ?, ?)", 
+                      (cliente, producto.split(" -")[0], cantidad, total))
+            conn.commit()
+            st.success(f"✅ ¡Gracias {cliente}! Pedido registrado por ${total:.2f} MXN.")
 
 # ==========================================
-# 3. SECCIÓN: AGENTE IA (CLOUD)
+# SECCIÓN 2: AGENTE IA (BURBUJA DE CHAT)
 # ==========================================
-elif opcion == "🤖 Agente IA (Nube)":
-    st.title("🧠 Agente de Inteligencia de Mercados")
-    st.write("Este agente analiza los costos de tu deshidratador ESP32 frente al mercado de Teziutlán (28,920 clientes potenciales).")
-    
-    # Simulación de conexión a API de IA en la nube (ej. OpenAI / Gemini)
-    api_key = st.text_input("Ingresa tu API Key (Opcional para pruebas):", type="password")
-    
-    with st.form("form_agente"):
-        costo_produccion = st.number_input("Costo de producción del lote ($):", min_value=0.0, value=150.0)
-        bolsas_generadas = st.number_input("Bolsas producidas:", min_value=1, value=20)
-        precio_competencia = st.number_input("Precio promedio de la competencia ($):", min_value=0.0, value=25.0)
-        
-        analizar = st.form_submit_button("Generar Análisis Estratégico")
-        
-        if analizar:
-            costo_unitario = costo_produccion / bolsas_generadas
-            precio_sugerido = precio_competencia * 0.85 # Estrategia de penetración (15% más barato)
-            margen = precio_sugerido - costo_unitario
-            
-            st.info("☁️ **Respuesta generada por el Agente en la Nube:**")
-            st.write(f"> *Análisis completado para la región de Teziutlán.*")
-            st.write(f"> - **Costo Unitario:** ${costo_unitario:.2f} MXN por bolsa.")
-            st.write(f"> - **Estrategia de Precio:** Para competir contra los ${precio_competencia:.2f} de otras marcas y captar al público joven, el precio sugerido es de **${precio_sugerido:.2f} MXN**.")
-            
-            if margen > 0:
-                st.success(f"> - **Viabilidad:** Excelente. Obtendrás un margen de ganancia de **${margen:.2f} MXN** por unidad vendida.")
-            else:
-                st.error(f"> - **Alerta:** A este precio, estás perdiendo ${abs(margen):.2f} MXN por bolsa. Necesitas optimizar el consumo de luz en el ESP32 o negociar mejor la materia prima.")
+elif opcion == "💬 Agente IA (Chat)":
+    st.title("🤖 Asistente de Inteligencia de Mercados")
+    st.write("Escribe los datos de tu lote en el chat para recibir un análisis en tiempo real.")
+
+    # Inicializar el historial de chat en la sesión
+    if "messages" not in st.session_state:
+        st.session_state.messages = [
+            {"role": "assistant", "content": "¡Hola! Soy tu Agente de Mercado en Teziutlán. Dime, ¿cuánto gastaste en producir este lote, cuántas bolsas salieron y a cuánto vende la competencia?"}
+        ]
+
+    # Mostrar el historial de mensajes (burbujas)
+    for msg in st.session_state.messages:
+        with st.chat_message(msg["role"]):
+            st.markdown(msg["content"])
+
+    # Entrada de texto estilo ChatGPT
+    if prompt := st.chat_input("Ej: Gasté $150, salieron 20 bolsas, la competencia vende a $25"):
+        # Mostrar mensaje del usuario
+        with st.chat_message("user"):
+            st.markdown(prompt)
+        st.session_state.messages.append({"role": "user", "content": prompt})
+
+        # Lógica del Sistema Experto (IA)
+        with st.chat_message("assistant"):
+            with st.spinner("Analizando datos del mercado en Teziutlán..."):
+                time.sleep(1) # Simular tiempo de pensamiento
+                
+                # Extraer números del texto del usuario
+                numeros = [float(n) for n in re.findall(r'\d+\.?\d*', prompt)]
+                
+                if len(numeros) >= 3:
+                    costo_total = numeros[0]
+                    bolsas = numeros[1]
+                    precio_comp = numeros[2]
+                    
+                    costo_unit = costo_total / bolsas
+                    precio_sug = precio_comp * 0.85
+                    margen = precio_sug - costo_unit
+                    
+                    respuesta = f"📊 **Análisis Estratégico Completado:**\n\n"
+                    respuesta += f"- **Costo Unitario:** ${costo_unit:.2f} MXN.\n"
+                    respuesta += f"- **Precio de Competencia:** ${precio_comp:.2f} MXN.\n"
+                    respuesta += f"- **Precio Sugerido (Penetración):** **${precio_sug:.2f} MXN**.\n\n"
+                    
+                    if margen > 0:
+                        respuesta += f"✅ **Estrategia Viable:** Tienes un margen de ganancia de **${margen:.2f} MXN** por bolsa. ¡Es ideal para el mercado joven de Teziutlán!"
+                    else:
+                        respuesta += f"⚠️ **Alerta Financiera:** Estás perdiendo ${abs(margen):.2f} MXN por bolsa. Debes ajustar tu producción en el ESP32."
+                else:
+                    respuesta = "No pude detectar todos los datos. Por favor, asegúrate de escribir tres números: el costo total, las bolsas producidas y el precio de la competencia."
+                
+                st.markdown(respuesta)
+        st.session_state.messages.append({"role": "assistant", "content": respuesta})
 
 # ==========================================
-# 4. SECCIÓN: BASE DE DATOS (VISUALIZACIÓN)
+# SECCIÓN 3: BASE DE DATOS E HISTORIAL
 # ==========================================
 elif opcion == "📊 Base de Datos":
-    st.title("🗄️ Historial de Ventas")
-    st.write("Todos los datos generados en la tienda se almacenan y consultan desde la base de datos SQLite.")
+    st.title("🗄️ Panel de Control y Ventas")
+    st.write("Monitorea el rendimiento comercial del proyecto.")
     
     df_ventas = pd.read_sql_query("SELECT * FROM ventas", conn)
     
     if df_ventas.empty:
-        st.info("Aún no hay ventas registradas.")
+        st.info("No hay ventas registradas actualmente.")
     else:
-        st.dataframe(df_ventas, use_container_width=True)
+        # Tarjetas de métricas
+        ingresos = df_ventas['total'].sum()
+        bolsas = df_ventas['cantidad'].sum()
+        ticket_promedio = ingresos / len(df_ventas)
         
-        # Métrica rápida
-        ingresos_totales = df_ventas["total"].sum()
-        bolsas_vendidas = df_ventas["cantidad"].sum()
+        col1, col2, col3 = st.columns(3)
+        col1.metric("Ingresos Totales", f"${ingresos:.2f} MXN", "+15% vs mes anterior")
+        col2.metric("Bolsas Vendidas", f"{bolsas} ud")
+        col3.metric("Ticket Promedio", f"${ticket_promedio:.2f} MXN")
         
-        col1, col2 = st.columns(2)
-        col1.metric("Ingresos Totales", f"${ingresos_totales:.2f} MXN")
-        col2.metric("Bolsas Vendidas", f"{bolsas_vendidas} unidades")
+        st.divider()
+        st.subheader("Registro Detallado")
+        st.dataframe(df_ventas, use_container_width=True, hide_index=True)
