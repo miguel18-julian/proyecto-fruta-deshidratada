@@ -5,28 +5,98 @@ import re
 import time
 
 # ==========================================
-# CONFIGURACIÓN Y ESTILOS VISUALES
+# CONFIGURACIÓN Y ESTILOS VISUALES (ESTILO NATURAL)
 # ==========================================
-st.set_page_config(page_title="VitalFruit | Teziutlán", page_icon="🍊", layout="wide")
+st.set_page_config(page_title="Fruta Deshidratada | 100% Natural", page_icon="🍃", layout="wide")
 
-# Inyección de CSS para hacer la página más atractiva
+# Inyección de CSS avanzado para replicar la imagen de referencia
 st.markdown("""
     <style>
-    /* Color de botones */
+    /* Ocultar el menú lateral izquierdo por completo */
+    [data-testid="collapsedControl"] { display: none; }
+    section[data-testid="stSidebar"] { display: none; }
+
+    /* Fondo general de la página */
+    .stApp {
+        background-color: #ffffff;
+    }
+    
+    /* Botones principales */
     .stButton>button {
-        background-color: #ff6f00 !important;
+        background-color: #FF7043 !important; /* Tono naranja que combina con el empaque del mango */
         color: white !important;
         font-weight: bold !important;
-        border-radius: 10px !important;
+        border-radius: 30px !important;
         border: none !important;
+        padding: 10px 24px !important;
+        width: 100%;
+        transition: 0.3s;
     }
     .stButton>button:hover {
-        background-color: #e65c00 !important;
+        background-color: #E64A19 !important;
+        transform: scale(1.02);
     }
-    /* Estilo de encabezados */
+    
+    /* Títulos centrales */
     h1, h2, h3 {
-        color: #ff6f00;
+        color: #2E7D32 !important; /* Verde oscuro */
+        text-align: center;
         font-family: 'Arial', sans-serif;
+    }
+
+    /* Estilo del menú superior (Tabs) */
+    .stTabs [data-baseweb="tab-list"] {
+        justify-content: center;
+        background-color: #f1f8f1;
+        padding: 10px;
+        border-radius: 30px;
+        margin-bottom: 30px;
+    }
+    .stTabs [data-baseweb="tab"] {
+        color: #2E7D32 !important;
+        font-weight: bold;
+        font-size: 18px;
+        padding: 10px 25px;
+    }
+    .stTabs [aria-selected="true"] {
+        background-color: #4CAF50 !important; /* Verde vibrante */
+        color: white !important;
+        border-radius: 20px;
+    }
+
+    /* === DISEÑO DE LOS CÍRCULOS VERDES INSPIRADO EN LA IMAGEN === */
+    .green-wave-section {
+        background-color: #61A639; /* Verde similar al de la imagen */
+        padding: 60px 10px;
+        border-radius: 50% 50% 0 0 / 20px 20px 0 0; /* Ligera curvatura superior */
+        margin-top: 60px;
+        display: flex;
+        justify-content: center;
+        gap: 20px;
+        flex-wrap: wrap;
+        align-items: center;
+    }
+    .circle-badge {
+        background-color: white;
+        color: #004D26;
+        width: 150px;
+        height: 150px;
+        border-radius: 50%;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        text-align: center;
+        font-weight: bold;
+        font-size: 16px;
+        line-height: 1.1;
+        box-shadow: 0 10px 15px rgba(0,0,0,0.15);
+    }
+    .circle-badge .big-text {
+        font-size: 32px;
+        font-weight: 900;
+        font-style: italic;
+        color: #004D26;
     }
     </style>
     """, unsafe_allow_html=True)
@@ -47,57 +117,37 @@ def init_db():
 conn = init_db()
 
 # ==========================================
-# NAVEGACIÓN LATERAL (SIDEBAR)
+# MENÚ SUPERIOR (TABS)
 # ==========================================
-with st.sidebar:
-    st.image("https://images.unsplash.com/photo-1517058814526-724bbba07a75?q=80&w=500", caption="Fruta 100% Natural")
-    st.title("🍊 Menú VitalFruit")
-    opcion = st.radio("Navegación:", ["🛒 Tienda en Línea", "💬 Agente IA (Chat)", "📊 Base de Datos"])
-    st.divider()
-    st.caption("Proyecto: Inteligencia de Mercados")
-    st.caption("Región: Teziutlán, Puebla")
+st.title("🍃 Fruta Deshidratada Teziutlán")
+st.markdown("### El snack perfecto, saludable y 100% natural.")
+
+tab1, tab2, tab3 = st.tabs(["🛒 Productos", "💬 Burbuja IA", "📊 Panel de Ventas"])
 
 # ==========================================
 # SECCIÓN 1: TIENDA EN LÍNEA
 # ==========================================
-if opcion == "🛒 Tienda en Línea":
-    st.title("🍊 Tienda Oficial VitalFruit")
-    st.markdown("### Snack saludable, tecnología controlada por ESP32.")
-    
-    # Banner principal
-    st.image("https://images.unsplash.com/photo-1600857544200-b2f666a9a2ec?q=80&w=1200&h=300&fit=crop", use_container_width=True)
-    st.divider()
-
-    # Catálogo de productos con imágenes en columnas
-    col1, col2, col3 = st.columns(3)
-    
-    with col1:
-        st.image("https://images.unsplash.com/photo-1567306226416-28f0efdc88ce?q=80&w=400", caption="Manzana Deshidratada")
-        st.subheader("Manzana (50g)")
-        st.write("Precio: $20.00 MXN")
+with tab1:
+    # Mostramos productos en columnas (estilo catálogo de la imagen)
+    col1, col2, col3 = st.columns([1, 2, 1])
     with col2:
-        st.image("https://images.unsplash.com/photo-1553279768-865429fa0078?q=80&w=400", caption="Mango Deshidratado")
-        st.subheader("Mango (50g)")
-        st.write("Precio: $25.00 MXN")
-    with col3:
-        st.image("https://images.unsplash.com/photo-1519996409144-56c88c9aa612?q=80&w=400", caption="Mix Frutal Energía")
-        st.subheader("Mix Frutal (100g)")
-        st.write("Precio: $35.00 MXN")
-
+        st.image("https://images.unsplash.com/photo-1553279768-865429fa0078?q=80&w=800", caption="Mango Deshidratado - 100% Natural", use_container_width=True)
+    
     st.divider()
     
-    # Formulario de pago estilizado
-    st.subheader("💳 Realizar Pedido")
+    # Formulario de pago
+    st.subheader("💳 Haz tu Pedido")
     with st.form("form_venta", clear_on_submit=True):
-        cliente = st.text_input("👤 Tu Nombre:")
-        col_prod, col_cant = st.columns(2)
-        with col_prod:
-            producto = st.selectbox("🍎 Selecciona el producto:", 
-                                    ["Manzana Deshidratada - $20.00", "Mango Deshidratado - $25.00", "Mix Frutal - $35.00"])
-        with col_cant:
-            cantidad = st.number_input("📦 Cantidad de bolsas:", min_value=1, value=1)
+        col_c, col_p, col_q = st.columns([2, 2, 1])
+        with col_c:
+            cliente = st.text_input("👤 Tu Nombre:")
+        with col_p:
+            producto = st.selectbox("🍎 Producto:", 
+                                    ["Mango Deshidratado (50g) - $25.00", "Manzana Deshidratada (50g) - $20.00", "Mix Frutal - $35.00"])
+        with col_q:
+            cantidad = st.number_input("📦 Cantidad:", min_value=1, value=1)
             
-        comprar = st.form_submit_button("Confirmar Compra")
+        comprar = st.form_submit_button("Añadir al Carrito y Comprar")
         
         if comprar and cliente:
             precio = float(re.search(r'\$([0-9.]+)', producto).group(1))
@@ -106,87 +156,83 @@ if opcion == "🛒 Tienda en Línea":
             c.execute("INSERT INTO ventas (cliente, producto, cantidad, total) VALUES (?, ?, ?, ?)", 
                       (cliente, producto.split(" -")[0], cantidad, total))
             conn.commit()
-            st.success(f"✅ ¡Gracias {cliente}! Pedido registrado por ${total:.2f} MXN.")
+            st.success(f"✅ ¡Gracias {cliente}! Tu pedido por ${total:.2f} MXN ha sido procesado.")
+
+    # Recreación de los círculos verdes de la imagen usando HTML/CSS
+    html_badges = """
+    <div class="green-wave-section">
+        <div class="circle-badge"><span class="big-text">0%</span>azúcar<br>añadida</div>
+        <div class="circle-badge"><span class="big-text">100%</span>Sabor<br>natural</div>
+        <div class="circle-badge"><span style="font-size:24px; font-weight:900; font-style:italic;">Libre</span>de colorantes<br>artificiales</div>
+        <div class="circle-badge"><span class="big-text">Vegano</span></div>
+        <div class="circle-badge">Hecho en<br><span class="big-text">México</span></div>
+    </div>
+    """
+    st.markdown(html_badges, unsafe_allow_html=True)
+
 
 # ==========================================
-# SECCIÓN 2: AGENTE IA (BURBUJA DE CHAT)
+# SECCIÓN 2: AGENTE IA (BURBUJAS INTERACTIVAS)
 # ==========================================
-elif opcion == "💬 Agente IA (Chat)":
-    st.title("🤖 Asistente de Inteligencia de Mercados")
-    st.write("Escribe los datos de tu lote en el chat para recibir un análisis en tiempo real.")
+with tab2:
+    st.subheader("🤖 Agente Experto en el Mercado de Teziutlán")
+    st.write("Escríbeme cuánto gastaste, cuántas bolsas salieron de tu deshidratador y a cuánto vende la competencia.")
 
-    # Inicializar el historial de chat en la sesión
-    if "messages" not in st.session_state:
-        st.session_state.messages = [
-            {"role": "assistant", "content": "¡Hola! Soy tu Agente de Mercado en Teziutlán. Dime, ¿cuánto gastaste en producir este lote, cuántas bolsas salieron y a cuánto vende la competencia?"}
+    if "mensajes" not in st.session_state:
+        st.session_state.mensajes = [
+            {"rol": "assistant", "contenido": "¡Hola! Soy tu asistente. Pásame los datos de tu lote de fruta para calcular si tienes buen margen de ganancia."}
         ]
 
-    # Mostrar el historial de mensajes (burbujas)
-    for msg in st.session_state.messages:
-        with st.chat_message(msg["role"]):
-            st.markdown(msg["content"])
+    # Mostrar historial en burbujas de diálogo reales
+    for msj in st.session_state.mensajes:
+        with st.chat_message(msj["rol"]):
+            st.markdown(msj["contenido"])
 
-    # Entrada de texto estilo ChatGPT
-    if prompt := st.chat_input("Ej: Gasté $150, salieron 20 bolsas, la competencia vende a $25"):
-        # Mostrar mensaje del usuario
+    # Barra de chat flotante estilo WhatsApp/ChatGPT
+    if entrada := st.chat_input("Ej: Gasté $150, saqué 20 bolsas, y la competencia vende a $25"):
         with st.chat_message("user"):
-            st.markdown(prompt)
-        st.session_state.messages.append({"role": "user", "content": prompt})
+            st.markdown(entrada)
+        st.session_state.mensajes.append({"rol": "user", "contenido": entrada})
 
-        # Lógica del Sistema Experto (IA)
         with st.chat_message("assistant"):
-            with st.spinner("Analizando datos del mercado en Teziutlán..."):
-                time.sleep(1) # Simular tiempo de pensamiento
-                
-                # Extraer números del texto del usuario
-                numeros = [float(n) for n in re.findall(r'\d+\.?\d*', prompt)]
+            with st.spinner("🧠 Pensando y analizando el mercado..."):
+                time.sleep(1)
+                # Extraer números
+                numeros = [float(n) for n in re.findall(r'\d+\.?\d*', entrada)]
                 
                 if len(numeros) >= 3:
-                    costo_total = numeros[0]
-                    bolsas = numeros[1]
-                    precio_comp = numeros[2]
-                    
-                    costo_unit = costo_total / bolsas
-                    precio_sug = precio_comp * 0.85
+                    costo_unit = numeros[0] / numeros[1]
+                    precio_sug = numeros[2] * 0.85
                     margen = precio_sug - costo_unit
                     
-                    respuesta = f"📊 **Análisis Estratégico Completado:**\n\n"
-                    respuesta += f"- **Costo Unitario:** ${costo_unit:.2f} MXN.\n"
-                    respuesta += f"- **Precio de Competencia:** ${precio_comp:.2f} MXN.\n"
-                    respuesta += f"- **Precio Sugerido (Penetración):** **${precio_sug:.2f} MXN**.\n\n"
+                    resp = f"📊 **Resultados:**\n- **Costo por bolsa:** ${costo_unit:.2f} MXN.\n- **Precio sugerido:** **${precio_sug:.2f} MXN** (15% más barato que la competencia).\n"
                     
                     if margen > 0:
-                        respuesta += f"✅ **Estrategia Viable:** Tienes un margen de ganancia de **${margen:.2f} MXN** por bolsa. ¡Es ideal para el mercado joven de Teziutlán!"
+                        resp += f"✅ **¡Excelente!** Ganas **${margen:.2f} MXN** por cada bolsa vendida."
                     else:
-                        respuesta += f"⚠️ **Alerta Financiera:** Estás perdiendo ${abs(margen):.2f} MXN por bolsa. Debes ajustar tu producción en el ESP32."
+                        resp += f"⚠️ **Alerta:** Pierdes ${abs(margen):.2f} MXN por bolsa. Necesitas optimizar tu deshidratador."
                 else:
-                    respuesta = "No pude detectar todos los datos. Por favor, asegúrate de escribir tres números: el costo total, las bolsas producidas y el precio de la competencia."
+                    resp = "Me faltan datos. Escribe 3 números: el costo de producción, bolsas hechas y precio de la competencia."
                 
-                st.markdown(respuesta)
-        st.session_state.messages.append({"role": "assistant", "content": respuesta})
+                st.markdown(resp)
+        st.session_state.mensajes.append({"rol": "assistant", "contenido": resp})
 
 # ==========================================
-# SECCIÓN 3: BASE DE DATOS E HISTORIAL
+# SECCIÓN 3: BASE DE DATOS
 # ==========================================
-elif opcion == "📊 Base de Datos":
-    st.title("🗄️ Panel de Control y Ventas")
-    st.write("Monitorea el rendimiento comercial del proyecto.")
+with tab3:
+    st.subheader("🗄️ Historial de Ventas")
     
     df_ventas = pd.read_sql_query("SELECT * FROM ventas", conn)
-    
     if df_ventas.empty:
-        st.info("No hay ventas registradas actualmente.")
+        st.info("Aún no tienes ventas.")
     else:
-        # Tarjetas de métricas
-        ingresos = df_ventas['total'].sum()
-        bolsas = df_ventas['cantidad'].sum()
-        ticket_promedio = ingresos / len(df_ventas)
+        # Métricas rápidas
+        i_totales = df_ventas['total'].sum()
+        b_vendidas = df_ventas['cantidad'].sum()
         
-        col1, col2, col3 = st.columns(3)
-        col1.metric("Ingresos Totales", f"${ingresos:.2f} MXN", "+15% vs mes anterior")
-        col2.metric("Bolsas Vendidas", f"{bolsas} ud")
-        col3.metric("Ticket Promedio", f"${ticket_promedio:.2f} MXN")
+        c1, c2 = st.columns(2)
+        c1.metric("Ingresos Totales", f"${i_totales:.2f} MXN")
+        c2.metric("Bolsas Vendidas", f"{b_vendidas} ud")
         
-        st.divider()
-        st.subheader("Registro Detallado")
         st.dataframe(df_ventas, use_container_width=True, hide_index=True)
