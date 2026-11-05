@@ -3,100 +3,64 @@ import sqlite3
 import pandas as pd
 import re
 import time
+from streamlit_option_menu import option_menu
 
 # ==========================================
-# CONFIGURACIÓN Y ESTILOS VISUALES (ESTILO NATURAL)
+# CONFIGURACIÓN Y ESTILOS VISUALES
 # ==========================================
-st.set_page_config(page_title="Fruta Deshidratada | 100% Natural", page_icon="🍃", layout="wide")
+st.set_page_config(page_title="VitalFruit | 100% Natural", page_icon="🍃", layout="wide")
 
-# Inyección de CSS avanzado para replicar la imagen de referencia
+# Inyección de CSS para simular el diseño de "come verde"
 st.markdown("""
     <style>
-    /* Ocultar el menú lateral izquierdo por completo */
-    [data-testid="collapsedControl"] { display: none; }
-    section[data-testid="stSidebar"] { display: none; }
-
-    /* Fondo general de la página */
+    /* Ocultar elementos por defecto de Streamlit */
+    #MainMenu {visibility: hidden;}
+    footer {visibility: hidden;}
+    header {visibility: hidden;}
+    
+    /* Fondo general */
     .stApp {
-        background-color: #ffffff;
+        background-color: #F4F1E1; /* Beige claro de fondo */
+    }
+
+    /* Estilo del navbar (simulado con color de fondo) */
+    .nav-container {
+        background-color: #005A32; /* Verde oscuro */
+        padding: 10px 0;
+        margin-top: -60px; /* Ajuste para subir el nav */
+        margin-bottom: 20px;
+    }
+
+    /* Títulos y textos generales */
+    h1, h2, h3, p {
+        color: #005A32 !important;
+        font-family: 'Helvetica Neue', sans-serif;
     }
     
-    /* Botones principales */
+    /* Botones estilo "Mostrar Todo" */
     .stButton>button {
-        background-color: #FF7043 !important; /* Tono naranja que combina con el empaque del mango */
+        background-color: #81C784 !important; /* Verde claro */
         color: white !important;
-        font-weight: bold !important;
-        border-radius: 30px !important;
+        border-radius: 20px !important;
         border: none !important;
-        padding: 10px 24px !important;
-        width: 100%;
-        transition: 0.3s;
+        padding: 8px 20px !important;
+        font-weight: bold;
     }
     .stButton>button:hover {
-        background-color: #E64A19 !important;
-        transform: scale(1.02);
+        background-color: #66BB6A !important;
+    }
+
+    /* Ajuste de imágenes para que se parezcan a los empaques */
+    img {
+        border-radius: 15px;
     }
     
-    /* Títulos centrales */
-    h1, h2, h3 {
-        color: #2E7D32 !important; /* Verde oscuro */
-        text-align: center;
-        font-family: 'Arial', sans-serif;
-    }
-
-    /* Estilo del menú superior (Tabs) */
-    .stTabs [data-baseweb="tab-list"] {
-        justify-content: center;
-        background-color: #f1f8f1;
-        padding: 10px;
-        border-radius: 30px;
-        margin-bottom: 30px;
-    }
-    .stTabs [data-baseweb="tab"] {
-        color: #2E7D32 !important;
-        font-weight: bold;
-        font-size: 18px;
-        padding: 10px 25px;
-    }
-    .stTabs [aria-selected="true"] {
-        background-color: #4CAF50 !important; /* Verde vibrante */
-        color: white !important;
-        border-radius: 20px;
-    }
-
-    /* === DISEÑO DE LOS CÍRCULOS VERDES INSPIRADO EN LA IMAGEN === */
-    .green-wave-section {
-        background-color: #61A639; /* Verde similar al de la imagen */
-        padding: 60px 10px;
-        border-radius: 50% 50% 0 0 / 20px 20px 0 0; /* Ligera curvatura superior */
-        margin-top: 60px;
-        display: flex;
-        justify-content: center;
-        gap: 20px;
-        flex-wrap: wrap;
-        align-items: center;
-    }
-    .circle-badge {
+    /* Contenedor del Chat (Burbuja IA) */
+    .chat-container {
         background-color: white;
-        color: #004D26;
-        width: 150px;
-        height: 150px;
-        border-radius: 50%;
-        display: flex;
-        flex-direction: column;
-        align-items: center;
-        justify-content: center;
-        text-align: center;
-        font-weight: bold;
-        font-size: 16px;
-        line-height: 1.1;
-        box-shadow: 0 10px 15px rgba(0,0,0,0.15);
-    }
-    .circle-badge .big-text {
-        font-size: 32px;
-        font-weight: 900;
-        font-style: italic;
-        color: #004D26;
+        border-radius: 15px;
+        padding: 20px;
+        box-shadow: 0px 4px 10px rgba(0,0,0,0.1);
     }
     </style>
     """, unsafe_allow_html=True)
@@ -117,37 +81,69 @@ def init_db():
 conn = init_db()
 
 # ==========================================
-# MENÚ SUPERIOR (TABS)
+# MENÚ DE NAVEGACIÓN SUPERIOR
 # ==========================================
-st.title("🍃 Fruta Deshidratada Teziutlán")
-st.markdown("### El snack perfecto, saludable y 100% natural.")
+# Creamos un contenedor verde oscuro en la parte superior
+st.markdown('<div class="nav-container"></div>', unsafe_allow_html=True)
 
-tab1, tab2, tab3 = st.tabs(["🛒 Productos", "💬 Burbuja IA", "📊 Panel de Ventas"])
+# Usamos streamlit_option_menu para un navbar más estético
+selected = option_menu(
+    menu_title=None,
+    options=["Productos", "Burbuja IA", "Panel de Ventas"],
+    icons=["bag", "chat-dots", "graph-up"],
+    menu_icon="cast",
+    default_index=0,
+    orientation="horizontal",
+    styles={
+        "container": {"padding": "0!important", "background-color": "#005A32", "border-radius": "0"},
+        "icon": {"color": "white", "font-size": "18px"},
+        "nav-link": {"color": "white", "font-size": "16px", "text-align": "center", "margin": "0px", "--hover-color": "#004020"},
+        "nav-link-selected": {"background-color": "#81C784"},
+    }
+)
+
+# Título principal de la página
+st.markdown("<h2 style='text-align: center;'>Conoce todos nuestros productos</h2>", unsafe_allow_html=True)
 
 # ==========================================
-# SECCIÓN 1: TIENDA EN LÍNEA
+# SECCIÓN 1: TIENDA (Productos)
 # ==========================================
-with tab1:
-    # Mostramos productos en columnas (estilo catálogo de la imagen)
-    col1, col2, col3 = st.columns([1, 2, 1])
-    with col2:
-        st.image("https://images.unsplash.com/photo-1553279768-865429fa0078?q=80&w=800", caption="Mango Deshidratado - 100% Natural", use_container_width=True)
+if selected == "Productos":
+    # Fila de botones simulados (como filtros)
+    col_f1, col_f2, col_f3, col_f4, col_f5 = st.columns([1,1,2,1,1])
+    with col_f3:
+        st.markdown("<div style='text-align: center;'><button style='background-color:#81C784; border:none; border-radius:20px; color:white; padding:5px 15px; margin:5px;'>MOSTRAR TODO</button><button style='background-color:#81C784; border:none; border-radius:20px; color:white; padding:5px 15px; margin:5px;'>FRUTA DESHIDRATADA</button></div>", unsafe_allow_html=True)
+
+    st.write("") # Espacio
+
+    # Productos (Imágenes de ejemplo similares a empaques)
+    col1, col2, col3 = st.columns(3)
     
+    with col1:
+        st.image("https://images.unsplash.com/photo-1553279768-865429fa0078?q=80&w=400", caption="Mango Deshidratado")
+        st.markdown("<p style='text-align:center;'>$25.00 MXN</p>", unsafe_allow_html=True)
+    with col2:
+         st.image("https://images.unsplash.com/photo-1567306226416-28f0efdc88ce?q=80&w=400", caption="Manzana Deshidratada")
+         st.markdown("<p style='text-align:center;'>$20.00 MXN</p>", unsafe_allow_html=True)
+    with col3:
+        st.image("https://images.unsplash.com/photo-1519996409144-56c88c9aa612?q=80&w=400", caption="Mix Frutal")
+        st.markdown("<p style='text-align:center;'>$35.00 MXN</p>", unsafe_allow_html=True)
+
     st.divider()
     
-    # Formulario de pago
-    st.subheader("💳 Haz tu Pedido")
+    # Formulario de compra
+    st.subheader("🛒 Realizar Compra")
     with st.form("form_venta", clear_on_submit=True):
         col_c, col_p, col_q = st.columns([2, 2, 1])
         with col_c:
-            cliente = st.text_input("👤 Tu Nombre:")
+            cliente = st.text_input("Nombre:")
         with col_p:
-            producto = st.selectbox("🍎 Producto:", 
-                                    ["Mango Deshidratado (50g) - $25.00", "Manzana Deshidratada (50g) - $20.00", "Mix Frutal - $35.00"])
+            producto = st.selectbox("Producto:", 
+                                    ["Mango Deshidratado - $25.00", "Manzana Deshidratada - $20.00", "Mix Frutal - $35.00"])
         with col_q:
-            cantidad = st.number_input("📦 Cantidad:", min_value=1, value=1)
+            cantidad = st.number_input("Cantidad:", min_value=1, value=1)
             
-        comprar = st.form_submit_button("Añadir al Carrito y Comprar")
+        comprar = st.form_submit_button("Comprar")
         
         if comprar and cliente:
             precio = float(re.search(r'\$([0-9.]+)', producto).group(1))
@@ -156,48 +152,33 @@ with tab1:
             c.execute("INSERT INTO ventas (cliente, producto, cantidad, total) VALUES (?, ?, ?, ?)", 
                       (cliente, producto.split(" -")[0], cantidad, total))
             conn.commit()
-            st.success(f"✅ ¡Gracias {cliente}! Tu pedido por ${total:.2f} MXN ha sido procesado.")
-
-    # Recreación de los círculos verdes de la imagen usando HTML/CSS
-    html_badges = """
-    <div class="green-wave-section">
-        <div class="circle-badge"><span class="big-text">0%</span>azúcar<br>añadida</div>
-        <div class="circle-badge"><span class="big-text">100%</span>Sabor<br>natural</div>
-        <div class="circle-badge"><span style="font-size:24px; font-weight:900; font-style:italic;">Libre</span>de colorantes<br>artificiales</div>
-        <div class="circle-badge"><span class="big-text">Vegano</span></div>
-        <div class="circle-badge">Hecho en<br><span class="big-text">México</span></div>
-    </div>
-    """
-    st.markdown(html_badges, unsafe_allow_html=True)
-
+            st.success(f"¡Pedido procesado para {cliente} por ${total:.2f} MXN!")
 
 # ==========================================
-# SECCIÓN 2: AGENTE IA (BURBUJAS INTERACTIVAS)
+# SECCIÓN 2: BURBUJA IA
 # ==========================================
-with tab2:
-    st.subheader("🤖 Agente Experto en el Mercado de Teziutlán")
-    st.write("Escríbeme cuánto gastaste, cuántas bolsas salieron de tu deshidratador y a cuánto vende la competencia.")
+elif selected == "Burbuja IA":
+    st.markdown('<div class="chat-container">', unsafe_allow_html=True)
+    st.subheader("🤖 Asistente de Mercado")
+    st.write("Ingresa los datos de producción de tu deshidratador.")
 
     if "mensajes" not in st.session_state:
         st.session_state.mensajes = [
-            {"rol": "assistant", "contenido": "¡Hola! Soy tu asistente. Pásame los datos de tu lote de fruta para calcular si tienes buen margen de ganancia."}
+            {"rol": "assistant", "contenido": "Hola. Dime el costo total del lote, bolsas obtenidas y precio de competencia."}
         ]
 
-    # Mostrar historial en burbujas de diálogo reales
     for msj in st.session_state.mensajes:
         with st.chat_message(msj["rol"]):
             st.markdown(msj["contenido"])
 
-    # Barra de chat flotante estilo WhatsApp/ChatGPT
-    if entrada := st.chat_input("Ej: Gasté $150, saqué 20 bolsas, y la competencia vende a $25"):
+    if entrada := st.chat_input("Ej: Costo $150, bolsas 20, competencia $25"):
         with st.chat_message("user"):
             st.markdown(entrada)
         st.session_state.mensajes.append({"rol": "user", "contenido": entrada})
 
         with st.chat_message("assistant"):
-            with st.spinner("🧠 Pensando y analizando el mercado..."):
+            with st.spinner("Analizando..."):
                 time.sleep(1)
-                # Extraer números
                 numeros = [float(n) for n in re.findall(r'\d+\.?\d*', entrada)]
                 
                 if len(numeros) >= 3:
@@ -205,34 +186,26 @@ with tab2:
                     precio_sug = numeros[2] * 0.85
                     margen = precio_sug - costo_unit
                     
-                    resp = f"📊 **Resultados:**\n- **Costo por bolsa:** ${costo_unit:.2f} MXN.\n- **Precio sugerido:** **${precio_sug:.2f} MXN** (15% más barato que la competencia).\n"
-                    
+                    resp = f"**Análisis:**\n- Costo Unitario: ${costo_unit:.2f}\n- Precio Sugerido: **${precio_sug:.2f}**\n"
                     if margen > 0:
-                        resp += f"✅ **¡Excelente!** Ganas **${margen:.2f} MXN** por cada bolsa vendida."
+                        resp += f"✅ Margen de ganancia: **${margen:.2f}** por bolsa."
                     else:
-                        resp += f"⚠️ **Alerta:** Pierdes ${abs(margen):.2f} MXN por bolsa. Necesitas optimizar tu deshidratador."
+                        resp += f"⚠️ Pérdida de ${abs(margen):.2f} por bolsa."
                 else:
-                    resp = "Me faltan datos. Escribe 3 números: el costo de producción, bolsas hechas y precio de la competencia."
+                    resp = "Faltan datos. Necesito: costo, número de bolsas y precio de competencia."
                 
                 st.markdown(resp)
         st.session_state.mensajes.append({"rol": "assistant", "contenido": resp})
+    st.markdown('</div>', unsafe_allow_html=True)
 
 # ==========================================
-# SECCIÓN 3: BASE DE DATOS
+# SECCIÓN 3: PANEL DE VENTAS
 # ==========================================
-with tab3:
-    st.subheader("🗄️ Historial de Ventas")
+elif selected == "Panel de Ventas":
+    st.subheader("📊 Datos de Ventas")
     
     df_ventas = pd.read_sql_query("SELECT * FROM ventas", conn)
     if df_ventas.empty:
-        st.info("Aún no tienes ventas.")
+        st.info("Sin datos.")
     else:
-        # Métricas rápidas
-        i_totales = df_ventas['total'].sum()
-        b_vendidas = df_ventas['cantidad'].sum()
-        
-        c1, c2 = st.columns(2)
-        c1.metric("Ingresos Totales", f"${i_totales:.2f} MXN")
-        c2.metric("Bolsas Vendidas", f"{b_vendidas} ud")
-        
         st.dataframe(df_ventas, use_container_width=True, hide_index=True)
